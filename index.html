@@ -395,6 +395,8 @@ img{max-width:100%;display:block}
 <script>
 let cart=[];
 
+ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGPeCcqYG5nkTtTSmgD4rshbbrFxn62NZxAjn3DNo-pDVsaXjxJoKcPQQ_sQd2iY07bA/exec"; 
+  
 function addProduct(name,category,price,sizeNumber){
 const size=document.getElementById("size"+sizeNumber).value;
 if(!size){alert("Please select a size first.");return;}
