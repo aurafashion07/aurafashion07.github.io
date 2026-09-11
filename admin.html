@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -84,7 +83,6 @@ body{
   font-size:14px;
 }
 
-
 /* ================= APP ================= */
 
 #adminPage{
@@ -95,7 +93,6 @@ body{
   display:flex;
   min-height:100vh;
 }
-
 
 /* ================= SIDEBAR ================= */
 
@@ -161,7 +158,6 @@ body{
   cursor:pointer;
 }
 
-
 /* ================= MAIN ================= */
 
 .main{
@@ -198,7 +194,6 @@ body{
   padding:30px;
 }
 
-
 /* ================= PAGE ================= */
 
 .page{
@@ -221,7 +216,6 @@ body{
 .page-title p{
   color:#777;
 }
-
 
 /* ================= STATS ================= */
 
@@ -256,7 +250,6 @@ body{
   color:#999;
 }
 
-
 /* ================= CARD ================= */
 
 .panel{
@@ -284,7 +277,6 @@ body{
   margin-top:4px;
 }
 
-
 /* ================= BUTTON ================= */
 
 .btn{
@@ -310,7 +302,6 @@ body{
   background:#ffecec;
   color:#c00;
 }
-
 
 /* ================= PRODUCT GRID ================= */
 
@@ -381,7 +372,6 @@ body{
   background:#fff;
 }
 
-
 /* ================= TABLE ================= */
 
 .table-wrap{
@@ -413,7 +403,6 @@ th{
   background:#fff4dc;
   color:#9a6800;
 }
-
 
 /* ================= FORM ================= */
 
@@ -459,7 +448,6 @@ th{
   gap:10px;
 }
 
-
 /* ================= IMAGE UPLOAD ================= */
 
 .upload-box{
@@ -486,7 +474,6 @@ th{
   border-radius:10px;
 }
 
-
 /* ================= EMPTY ================= */
 
 .empty{
@@ -494,7 +481,6 @@ th{
   padding:50px 20px;
   color:#999;
 }
-
 
 /* ================= MOBILE ================= */
 
@@ -572,9 +558,7 @@ th{
 </style>
 </head>
 
-
 <body>
-
 
 <!-- ================= LOGIN ================= -->
 
@@ -619,8 +603,7 @@ th{
 
 <div class="app">
 
-
-<!-- SIDEBAR -->
+<!-- ================= SIDEBAR ================= -->
 
 <aside class="sidebar">
 
@@ -660,10 +643,9 @@ th{
 </aside>
 
 
-<!-- MAIN -->
+<!-- ================= MAIN ================= -->
 
 <main class="main">
-
 
 <!-- TOPBAR -->
 
@@ -815,6 +797,11 @@ th{
         <tr>
           <td>Product System</td>
           <td><span class="status">Active</span></td>
+        </tr>
+
+        <tr>
+          <td>Google Drive</td>
+          <td><span class="status">Connected</span></td>
         </tr>
 
       </table>
@@ -985,6 +972,7 @@ th{
 
       <button
         class="btn btn-dark"
+        id="saveProductBtn"
         onclick="saveProduct()"
       >
         Save Product
@@ -1229,12 +1217,6 @@ th{
 
 const ADMIN_PASSWORD = "aura123";
 
-
-/*
- IMPORTANT:
- This is your current Google Apps Script Web App.
-*/
-
 const GOOGLE_SCRIPT_URL =
 "https://script.google.com/macros/s/AKfycbyGPeCcqYG5nkTtTSmgD4rshbbrFxn62NZxAjn3DNo-pDVsaJxJoKcPQQ_sQd2iY07bA/exec";
 
@@ -1399,7 +1381,7 @@ let products = [
 let editingProductId = null;
 
 
-/* LOAD PRODUCTS */
+/* ================= LOAD PRODUCTS ================= */
 
 function loadProducts(){
 
@@ -1425,7 +1407,7 @@ function loadProducts(){
 }
 
 
-/* SAVE LOCAL PRODUCTS */
+/* ================= SAVE LOCAL PRODUCTS ================= */
 
 function saveProducts(){
 
@@ -1437,7 +1419,7 @@ function saveProducts(){
 }
 
 
-/* RENDER */
+/* ================= RENDER PRODUCTS ================= */
 
 function renderProducts(){
 
@@ -1462,7 +1444,7 @@ function renderProducts(){
     if(product.image){
 
       imageHTML =
-        `<img src="${product.image}" alt="${product.name}">`;
+        `<img src="${product.image}" alt="${escapeHTML(product.name)}">`;
 
     }
 
@@ -1521,7 +1503,7 @@ function renderProducts(){
 }
 
 
-/* ADD PRODUCT */
+/* ================= ADD PRODUCT FORM ================= */
 
 function showAddProduct(){
 
@@ -1530,6 +1512,9 @@ function showAddProduct(){
   document.getElementById("formTitle").innerText =
     "Add New Product";
 
+  document.getElementById("saveProductBtn").innerText =
+    "Save Product";
+
   document.getElementById("productName").value = "";
 
   document.getElementById("productPrice").value = "";
@@ -1537,7 +1522,8 @@ function showAddProduct(){
   document.getElementById("productCategory").value =
     "CLASSIC LOGO";
 
-  document.getElementById("productStock").value = "10";
+  document.getElementById("productStock").value =
+    "10";
 
   document.getElementById("productSizes").value =
     "S,M,L,XL,XXL";
@@ -1558,7 +1544,7 @@ function showAddProduct(){
 }
 
 
-/* EDIT PRODUCT */
+/* ================= EDIT PRODUCT ================= */
 
 function editProduct(id){
 
@@ -1579,6 +1565,9 @@ function editProduct(id){
   document.getElementById("formTitle").innerText =
     "Edit Product";
 
+  document.getElementById("saveProductBtn").innerText =
+    "Update Product";
+
 
   document.getElementById("productName").value =
     product.name;
@@ -1596,6 +1585,12 @@ function editProduct(id){
     product.sizes;
 
 
+  document.getElementById("productImage").value = "";
+
+  document.getElementById("imagePreviewBox").style.display =
+    "none";
+
+
   document.getElementById("productFormPanel").style.display =
     "block";
 
@@ -1608,7 +1603,7 @@ function editProduct(id){
 }
 
 
-/* DELETE */
+/* ================= DELETE PRODUCT ================= */
 
 function deleteProduct(id){
 
@@ -1647,7 +1642,7 @@ function deleteProduct(id){
 }
 
 
-/* PREVIEW */
+/* ================= IMAGE PREVIEW ================= */
 
 function previewProductImage(){
 
@@ -1656,6 +1651,17 @@ function previewProductImage(){
 
 
   if(!file){
+
+    return;
+
+  }
+
+
+  if(!file.type.startsWith("image/")){
+
+    alert("Please select an image file.");
+
+    document.getElementById("productImage").value = "";
 
     return;
 
@@ -1693,27 +1699,122 @@ function previewProductImage(){
 }
 
 
-/* SAVE PRODUCT */
+/* ================= UPLOAD IMAGE TO GOOGLE DRIVE ================= */
 
-function saveProduct(){
+async function uploadImageToDrive(file){
+
+  return new Promise(function(resolve,reject){
+
+    const reader =
+      new FileReader();
+
+
+    reader.onload = async function(e){
+
+      try{
+
+        const imageData =
+          e.target.result;
+
+
+        await fetch(
+          GOOGLE_SCRIPT_URL,
+          {
+            method:"POST",
+
+            mode:"no-cors",
+
+            headers:{
+              "Content-Type":
+                "text/plain;charset=utf-8"
+            },
+
+            body:JSON.stringify({
+
+              action:"uploadImage",
+
+              fileName:file.name,
+
+              mimeType:file.type,
+
+              image:imageData
+
+            })
+
+          }
+        );
+
+
+        /*
+          Google Apps Script receives the image
+          and creates the file in Drive.
+        */
+
+        resolve(imageData);
+
+      }catch(error){
+
+        console.error(
+          "Drive upload error:",
+          error
+        );
+
+        reject(error);
+
+      }
+
+    };
+
+
+    reader.onerror = function(){
+
+      reject(
+        new Error("Could not read image.")
+      );
+
+    };
+
+
+    reader.readAsDataURL(file);
+
+  });
+
+}
+
+
+/* ================= SAVE PRODUCT ================= */
+
+async function saveProduct(){
 
   const name =
-    document.getElementById("productName").value.trim();
+    document.getElementById("productName")
+      .value
+      .trim();
 
   const price =
-    Number(document.getElementById("productPrice").value);
+    Number(
+      document.getElementById("productPrice")
+        .value
+    );
 
   const category =
-    document.getElementById("productCategory").value;
+    document.getElementById("productCategory")
+      .value;
 
   const stock =
-    Number(document.getElementById("productStock").value);
+    Number(
+      document.getElementById("productStock")
+        .value
+    );
 
   const sizes =
-    document.getElementById("productSizes").value.trim();
+    document.getElementById("productSizes")
+      .value
+      .trim();
 
   const file =
-    document.getElementById("productImage").files[0];
+    document.getElementById("productImage")
+      .files[0];
 
 
   if(!name){
@@ -1734,56 +1835,92 @@ function saveProduct(){
   }
 
 
-  if(editingProductId){
-
-    const product =
-      products.find(function(item){
-
-        return item.id === editingProductId;
-
-      });
+  const saveButton =
+    document.getElementById("saveProductBtn");
 
 
-    if(product){
+  saveButton.disabled = true;
 
-      product.name = name;
-      product.price = price;
-      product.category = category;
-      product.stock = stock;
-      product.sizes = sizes;
+  saveButton.innerText =
+    file
+      ? "Uploading..."
+      : "Saving...";
+
+
+  try{
+
+    /*
+      ==========================
+      EDIT PRODUCT
+      ==========================
+    */
+
+    if(editingProductId){
+
+      const product =
+        products.find(function(item){
+
+          return item.id === editingProductId;
+
+        });
+
+
+      if(!product){
+
+        throw new Error(
+          "Product not found."
+        );
+
+      }
+
+
+      product.name =
+        name;
+
+      product.price =
+        price;
+
+      product.category =
+        category;
+
+      product.stock =
+        stock;
+
+      product.sizes =
+        sizes;
 
 
       if(file){
 
-        const reader =
-          new FileReader();
-
-
-        reader.onload = function(e){
-
-          product.image =
-            e.target.result;
-
-          saveProducts();
-
-          renderProducts();
-
-          cancelProductForm();
-
-          alert("Product updated successfully.");
-
-        };
-
-
-        reader.readAsDataURL(file);
-
-        return;
+        product.image =
+          await uploadImageToDrive(file);
 
       }
 
+
+      saveProducts();
+
+      renderProducts();
+
+      cancelProductForm();
+
+      alert(
+        file
+          ? "Product updated and image uploaded successfully."
+          : "Product updated successfully."
+      );
+
+
+      return;
+
     }
 
-  }else{
+
+    /*
+      ==========================
+      NEW PRODUCT
+      ==========================
+    */
 
     const newProduct = {
 
@@ -1806,76 +1943,79 @@ function saveProduct(){
 
     if(file){
 
-      const reader =
-        new FileReader();
-
-
-      reader.onload = function(e){
-
-        newProduct.image =
-          e.target.result;
-
-        products.push(newProduct);
-
-        saveProducts();
-
-        renderProducts();
-
-        cancelProductForm();
-
-        alert("Product added successfully.");
-
-      };
-
-
-      reader.readAsDataURL(file);
-
-      return;
+      newProduct.image =
+        await uploadImageToDrive(file);
 
     }
 
 
     products.push(newProduct);
 
+    saveProducts();
+
+    renderProducts();
+
+    cancelProductForm();
+
+    alert(
+      file
+        ? "Product added and image uploaded successfully."
+        : "Product added successfully."
+    );
+
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      "Something went wrong.\n\n" +
+      error.message
+    );
+
+
+  }finally{
+
+    saveButton.disabled = false;
+
+    saveButton.innerText =
+      editingProductId
+        ? "Update Product"
+        : "Save Product";
+
   }
-
-
-  saveProducts();
-
-  renderProducts();
-
-  cancelProductForm();
-
-  alert(
-    editingProductId
-      ? "Product updated successfully."
-      : "Product added successfully."
-  );
 
 }
 
 
-/* CANCEL */
+/* ================= CANCEL PRODUCT FORM ================= */
 
 function cancelProductForm(){
 
-  document.getElementById("productFormPanel").style.display =
+  document.getElementById("productFormPanel")
+    .style.display =
     "none";
 
-  editingProductId = null;
+  editingProductId =
+    null;
 
 }
 
 
-/* HTML SECURITY */
+/* ================= HTML SECURITY ================= */
 
 function escapeHTML(text){
 
   return String(text)
+
     .replace(/&/g,"&amp;")
+
     .replace(/</g,"&lt;")
+
     .replace(/>/g,"&gt;")
+
     .replace(/"/g,"&quot;")
+
     .replace(/'/g,"&#039;");
 
 }
@@ -1884,4 +2024,3 @@ function escapeHTML(text){
 
 </body>
 </html>
-```
