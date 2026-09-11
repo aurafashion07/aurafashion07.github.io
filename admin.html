@@ -1385,8 +1385,7 @@ let editingProductId = null;
 
 function loadProducts(){
 
-  const saved =
-    localStorage.getItem("auraProducts");
+  const saved = localStorage.getItem("auraProducts");
 
   if(saved){
 
@@ -1394,9 +1393,19 @@ function loadProducts(){
 
       products = JSON.parse(saved);
 
+      // Remove old Base64/Data-URL images from the previous version.
+      // Only small Drive URLs are kept in localStorage now.
+      products = products.map(function(product){
+        if(product.image && String(product.image).startsWith("data:image/")){
+          product.image = "";
+        }
+        return product;
+      });
+
     }catch(error){
 
-      console.log(error);
+      console.log("Old product data could not be read. Resetting products.", error);
+      localStorage.removeItem("auraProducts");
 
     }
 
@@ -1411,10 +1420,36 @@ function loadProducts(){
 
 function saveProducts(){
 
-  localStorage.setItem(
-    "auraProducts",
-    JSON.stringify(products)
-  );
+  // Never save large Base64 images to browser storage.
+  const safeProducts = products.map(function(product){
+    const copy = Object.assign({}, product);
+
+    if(copy.image && String(copy.image).startsWith("data:image/")){
+      copy.image = "";
+    }
+
+    return copy;
+  });
+
+  try{
+
+    localStorage.setItem(
+      "auraProducts",
+      JSON.stringify(safeProducts)
+    );
+
+  }catch(error){
+
+    console.error("localStorage error:", error);
+
+    // Clear the old oversized value and try once more.
+    localStorage.removeItem("auraProducts");
+    localStorage.setItem(
+      "auraProducts",
+      JSON.stringify(safeProducts)
+    );
+
+  }
 
 }
 
@@ -1668,9 +1703,9 @@ function previewProductImage(){
   }
 
 
-  if(file.size > 5 * 1024 * 1024){
+  if(file.size > 10 * 1024 * 1024){
 
-    alert("Image must be smaller than 5MB.");
+    alert("Image must be smaller than 10MB.");
 
     document.getElementById("productImage").value = "";
 
@@ -1701,83 +1736,189 @@ function previewProductImage(){
 
 /* ================= UPLOAD IMAGE TO GOOGLE DRIVE ================= */
 
-async function uploadImageToDrive(file){
+async function compressImage(file){
 
   return new Promise(function(resolve,reject){
 
-    const reader =
-      new FileReader();
+    const reader = new FileReader();
 
+    reader.onload = function(e){
 
-    reader.onload = async function(e){
+      const img = new Image();
 
-      try{
+      img.onload = function(){
 
-        const imageData =
-          e.target.result;
+        const MAX_SIZE = 1400;
+        let width = img.width;
+        let height = img.height;
 
+        if(width > MAX_SIZE || height > MAX_SIZE){
 
-        await fetch(
-          GOOGLE_SCRIPT_URL,
-          {
-            method:"POST",
-
-            mode:"no-cors",
-
-            headers:{
-              "Content-Type":
-                "text/plain;charset=utf-8"
-            },
-
-            body:JSON.stringify({
-
-              action:"uploadImage",
-
-              fileName:file.name,
-
-              mimeType:file.type,
-
-              image:imageData
-
-            })
-
+          if(width > height){
+            height = Math.round(height * MAX_SIZE / width);
+            width = MAX_SIZE;
+          }else{
+            width = Math.round(width * MAX_SIZE / height);
+            height = MAX_SIZE;
           }
-        );
 
+        }
 
-        /*
-          Google Apps Script receives the image
-          and creates the file in Drive.
-        */
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
 
-        resolve(imageData);
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
 
-      }catch(error){
+        // JPEG keeps the request small enough for Apps Script.
+        const compressed = canvas.toDataURL("image/jpeg", 0.82);
+        resolve(compressed);
 
-        console.error(
-          "Drive upload error:",
-          error
-        );
+      };
 
-        reject(error);
+      img.onerror = function(){
+        reject(new Error("Could not process the image."));
+      };
 
-      }
+      img.src = e.target.result;
 
     };
-
 
     reader.onerror = function(){
-
-      reject(
-        new Error("Could not read image.")
-      );
-
+      reject(new Error("Could not read image."));
     };
-
 
     reader.readAsDataURL(file);
 
   });
+
+}
+
+
+/* ================= GET DRIVE URL ================= */
+
+function getUploadedImage(uploadId){
+
+  return new Promise(function(resolve,reject){
+
+    const callbackName =
+      "auraUploadCallback_" +
+      Date.now() + "_" +
+      Math.random().toString(36).slice(2);
+
+    const script = document.createElement("script");
+    let finished = false;
+
+    const cleanup = function(){
+      finished = true;
+      try{ delete window[callbackName]; }catch(e){}
+      if(script.parentNode){
+        script.parentNode.removeChild(script);
+      }
+    };
+
+    const timer = setTimeout(function(){
+      if(finished) return;
+      cleanup();
+      reject(new Error("Drive upload timed out. Please try a smaller image."));
+    }, 25000);
+
+    window[callbackName] = function(result){
+      if(finished) return;
+      clearTimeout(timer);
+      cleanup();
+
+      if(result && result.success && result.imageUrl){
+        resolve(result.imageUrl);
+      }else{
+        reject(new Error((result && result.error) || "Image was not found in Google Drive."));
+      }
+    };
+
+    script.onerror = function(){
+      if(finished) return;
+      clearTimeout(timer);
+      cleanup();
+      reject(new Error("Could not check the Google Drive upload."));
+    };
+
+    script.src =
+      GOOGLE_SCRIPT_URL +
+      "?action=findImage&uploadId=" +
+      encodeURIComponent(uploadId) +
+      "&callback=" +
+      encodeURIComponent(callbackName) +
+      "&_=" + Date.now();
+
+    document.body.appendChild(script);
+
+  });
+
+}
+
+
+/* ================= WAIT FOR DRIVE UPLOAD ================= */
+
+async function waitForDriveImage(uploadId){
+
+  let lastError = null;
+
+  for(let attempt = 0; attempt < 15; attempt++){
+
+    try{
+      return await getUploadedImage(uploadId);
+    }catch(error){
+      lastError = error;
+      await new Promise(function(resolve){
+        setTimeout(resolve, 1000);
+      });
+    }
+
+  }
+
+  throw lastError || new Error("Drive upload could not be confirmed.");
+
+}
+
+
+/* ================= UPLOAD IMAGE TO GOOGLE DRIVE ================= */
+
+async function uploadImageToDrive(file){
+
+  if(!file || !file.type.startsWith("image/")){
+    throw new Error("Please select a valid image file.");
+  }
+
+  const uploadId =
+    "aura_" +
+    Date.now() + "_" +
+    Math.random().toString(36).slice(2, 10);
+
+  const imageData = await compressImage(file);
+
+  // Apps Script receives this simple text POST. The response itself is
+  // not read because browsers hide cross-origin no-cors responses.
+  await fetch(
+    GOOGLE_SCRIPT_URL,
+    {
+      method:"POST",
+      mode:"no-cors",
+      headers:{
+        "Content-Type":"text/plain;charset=utf-8"
+      },
+      body:JSON.stringify({
+        action:"uploadImage",
+        uploadId:uploadId,
+        fileName:file.name.replace(/[^a-zA-Z0-9._-]/g, "_"),
+        mimeType:"image/jpeg",
+        image:imageData
+      })
+    }
+  );
+
+  // Ask Apps Script for the Drive URL using JSONP.
+  return await waitForDriveImage(uploadId);
 
 }
 
@@ -1906,7 +2047,7 @@ async function saveProduct(){
 
       alert(
         file
-          ? "Product updated and image uploaded successfully."
+          ? "Product updated and image saved to Google Drive successfully."
           : "Product updated successfully."
       );
 
@@ -1959,7 +2100,7 @@ async function saveProduct(){
 
     alert(
       file
-        ? "Product added and image uploaded successfully."
+        ? "Product added and image saved to Google Drive successfully."
         : "Product added successfully."
     );
 
