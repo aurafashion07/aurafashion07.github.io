@@ -1748,7 +1748,7 @@ async function compressImage(file){
 
       img.onload = function(){
 
-        const MAX_SIZE = 1400;
+        const MAX_SIZE = 800;
         let width = img.width;
         let height = img.height;
 
@@ -1772,7 +1772,7 @@ async function compressImage(file){
         ctx.drawImage(img, 0, 0, width, height);
 
         // JPEG keeps the request small enough for Apps Script.
-        const compressed = canvas.toDataURL("image/jpeg", 0.82);
+        const compressed = canvas.toDataURL("image/jpeg", 0.65);
         resolve(compressed);
 
       };
@@ -1838,6 +1838,11 @@ async function uploadImageToDrive(file){
 
   const imageData = await compressImage(file);
 
+  // Keep the request comfortably small for Google Apps Script.
+  if(imageData.length > 900000){
+    throw new Error("Image is still too large after compression. Please use a smaller photo.");
+  }
+
   return new Promise(function(resolve, reject){
 
     driveUploadResolver = resolve;
@@ -1876,7 +1881,7 @@ async function uploadImageToDrive(file){
     setTimeout(function(){
       try{ form.remove(); }catch(e){}
       try{ iframe.remove(); }catch(e){}
-    }, 30000);
+    }, 60000);
 
     setTimeout(function(){
       if(driveUploadIdWaiting === uploadId){
