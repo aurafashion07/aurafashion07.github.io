@@ -1218,7 +1218,7 @@ th{
 const ADMIN_PASSWORD = "aura123";
 
 const GOOGLE_SCRIPT_URL =
-"https://script.google.com/macros/s/AKfycbyGPeCcqYG5nkTtTSmgD4rshbbrFxn62NZxAjn3DNo-pDVsaJxixJoKcPQQ_sQd2iY07bA/exec";
+"https://script.google.com/macros/s/AKfycbyGPeCcqYG5nkTtTSmgD4rshbbrFxn62NZxAjn3DNo-pDVsaJxJoKcPQQ_sQd2iY07bA/exec"
 
 
 /* ================= LOGIN ================= */
@@ -1798,91 +1798,32 @@ async function compressImage(file){
 
 /* ================= GET DRIVE URL ================= */
 
-function getUploadedImage(uploadId){
+/* ================= GOOGLE DRIVE UPLOAD ================= */
 
-  return new Promise(function(resolve,reject){
+let driveUploadResolver = null;
+let driveUploadRejecter = null;
+let driveUploadIdWaiting = null;
 
-    const callbackName =
-      "auraUploadCallback_" +
-      Date.now() + "_" +
-      Math.random().toString(36).slice(2);
+window.addEventListener("message", function(event){
+  const data = event.data;
 
-    const script = document.createElement("script");
-    let finished = false;
+  if(!data || data.type !== "AURA_DRIVE_UPLOAD") return;
+  if(!driveUploadIdWaiting || data.uploadId !== driveUploadIdWaiting) return;
 
-    const cleanup = function(){
-      finished = true;
-      try{ delete window[callbackName]; }catch(e){}
-      if(script.parentNode){
-        script.parentNode.removeChild(script);
-      }
-    };
-
-    const timer = setTimeout(function(){
-      if(finished) return;
-      cleanup();
-      reject(new Error("Drive upload timed out. Please try a smaller image."));
-    }, 25000);
-
-    window[callbackName] = function(result){
-      if(finished) return;
-      clearTimeout(timer);
-      cleanup();
-
-      if(result && result.success && result.imageUrl){
-        resolve(result.imageUrl);
-      }else{
-        reject(new Error((result && result.error) || "Image was not found in Google Drive."));
-      }
-    };
-
-    script.onerror = function(){
-      if(finished) return;
-      clearTimeout(timer);
-      cleanup();
-      reject(new Error("Could not check the Google Drive upload."));
-    };
-
-    script.src =
-      GOOGLE_SCRIPT_URL +
-      "?action=findImage&uploadId=" +
-      encodeURIComponent(uploadId) +
-      "&callback=" +
-      encodeURIComponent(callbackName) +
-      "&_=" + Date.now();
-
-    document.body.appendChild(script);
-
-  });
-
-}
-
-
-/* ================= WAIT FOR DRIVE UPLOAD ================= */
-
-async function waitForDriveImage(uploadId){
-
-  let lastError = null;
-
-  for(let attempt = 0; attempt < 15; attempt++){
-
-    try{
-      return await getUploadedImage(uploadId);
-    }catch(error){
-      lastError = error;
-      await new Promise(function(resolve){
-        setTimeout(resolve, 1000);
-      });
-    }
-
+  if(driveUploadResolver && data.success && data.imageUrl){
+    const resolve = driveUploadResolver;
+    driveUploadResolver = null;
+    driveUploadRejecter = null;
+    driveUploadIdWaiting = null;
+    resolve(data.imageUrl);
+  }else if(driveUploadRejecter){
+    const reject = driveUploadRejecter;
+    driveUploadResolver = null;
+    driveUploadRejecter = null;
+    driveUploadIdWaiting = null;
+    reject(new Error(data.error || "Google Drive upload failed."));
   }
-
-  throw lastError || new Error("Drive upload could not be confirmed.");
-
-}
-
-
-/* ================= UPLOAD IMAGE TO GOOGLE DRIVE ================= */
+});
 
 async function uploadImageToDrive(file){
 
@@ -1897,28 +1838,56 @@ async function uploadImageToDrive(file){
 
   const imageData = await compressImage(file);
 
-  // Apps Script receives this simple text POST. The response itself is
-  // not read because browsers hide cross-origin no-cors responses.
-  await fetch(
-    GOOGLE_SCRIPT_URL,
-    {
-      method:"POST",
-      mode:"no-cors",
-      headers:{
-        "Content-Type":"text/plain;charset=utf-8"
-      },
-      body:JSON.stringify({
-        action:"uploadImage",
-        uploadId:uploadId,
-        fileName:file.name.replace(/[^a-zA-Z0-9._-]/g, "_"),
-        mimeType:"image/jpeg",
-        image:imageData
-      })
-    }
-  );
+  return new Promise(function(resolve, reject){
 
-  // Ask Apps Script for the Drive URL using JSONP.
-  return await waitForDriveImage(uploadId);
+    driveUploadResolver = resolve;
+    driveUploadRejecter = reject;
+    driveUploadIdWaiting = uploadId;
+
+    const iframe = document.createElement("iframe");
+    iframe.name = "auraDriveUploadFrame_" + uploadId;
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
+
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = GOOGLE_SCRIPT_URL;
+    form.target = iframe.name;
+    form.enctype = "application/x-www-form-urlencoded";
+    form.style.display = "none";
+
+    const payload = {
+      action: "uploadImage",
+      uploadId: uploadId,
+      fileName: file.name.replace(/[^a-zA-Z0-9._-]/g, "_"),
+      mimeType: "image/jpeg",
+      image: imageData
+    };
+
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "payload";
+    input.value = JSON.stringify(payload);
+    form.appendChild(input);
+
+    document.body.appendChild(form);
+    form.submit();
+
+    setTimeout(function(){
+      try{ form.remove(); }catch(e){}
+      try{ iframe.remove(); }catch(e){}
+    }, 30000);
+
+    setTimeout(function(){
+      if(driveUploadIdWaiting === uploadId){
+        driveUploadResolver = null;
+        driveUploadRejecter = null;
+        driveUploadIdWaiting = null;
+        reject(new Error("Google Drive upload timed out. Please try a smaller image."));
+      }
+    }, 25000);
+
+  });
 
 }
 
