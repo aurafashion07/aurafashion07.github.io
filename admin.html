@@ -5,309 +5,607 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>AURA FASHION - Admin Panel</title>
+<title>AURA FASHION — Admin Dashboard</title>
 
 <style>
+
 *{
   box-sizing:border-box;
   margin:0;
   padding:0;
-  font-family:Arial,sans-serif;
+  font-family:Arial,Helvetica,sans-serif;
 }
 
 body{
-  background:#f4f4f4;
-  color:#111;
+  background:#f5f6f8;
+  color:#151515;
 }
 
-/* LOGIN */
+/* ================= LOGIN ================= */
+
 #loginPage{
   min-height:100vh;
   display:flex;
-  justify-content:center;
   align-items:center;
+  justify-content:center;
   padding:20px;
+  background:#111;
 }
 
-.login-box{
-  background:white;
+.login-card{
   width:100%;
   max-width:400px;
-  padding:35px;
-  border-radius:15px;
-  box-shadow:0 10px 30px rgba(0,0,0,.12);
+  background:#fff;
+  padding:38px;
+  border-radius:18px;
   text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
 }
 
-.login-box h1{
-  font-size:30px;
-  margin-bottom:8px;
+.logo-text{
+  font-size:28px;
+  font-weight:800;
+  letter-spacing:2px;
 }
 
-.login-box p{
+.login-sub{
   color:#777;
-  margin-bottom:25px;
+  margin:8px 0 28px;
 }
 
-.login-box input{
+.login-card input{
   width:100%;
   padding:14px;
-  margin-bottom:15px;
   border:1px solid #ddd;
-  border-radius:8px;
+  border-radius:9px;
+  margin-bottom:14px;
   font-size:15px;
 }
 
-.login-box button{
+.login-btn{
   width:100%;
+  border:0;
   padding:14px;
-  border:none;
-  border-radius:8px;
   background:#111;
-  color:white;
-  font-size:16px;
+  color:#fff;
+  border-radius:9px;
+  font-size:15px;
   cursor:pointer;
 }
 
-.login-box button:hover{
+.login-btn:hover{
   background:#333;
 }
 
 #error{
-  color:red;
-  margin-top:12px;
   display:none;
+  color:#d00;
+  margin-top:12px;
+  font-size:14px;
 }
 
-/* ADMIN */
+
+/* ================= APP ================= */
+
 #adminPage{
   display:none;
 }
 
-header{
+.app{
+  display:flex;
+  min-height:100vh;
+}
+
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+  width:245px;
   background:#111;
   color:white;
-  padding:18px 25px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  padding:25px 15px;
+  z-index:10;
 }
 
-header h1{
-  font-size:22px;
+.brand{
+  padding:5px 12px 28px;
+  border-bottom:1px solid #333;
+  margin-bottom:20px;
 }
 
-.logout{
-  background:white;
-  color:#111;
-  border:none;
-  padding:9px 15px;
-  border-radius:7px;
+.brand h1{
+  font-size:21px;
+  letter-spacing:1px;
+}
+
+.brand span{
+  display:block;
+  color:#999;
+  font-size:12px;
+  margin-top:5px;
+}
+
+.nav-btn{
+  width:100%;
+  border:0;
+  background:transparent;
+  color:#bbb;
+  padding:13px 14px;
+  text-align:left;
+  border-radius:8px;
+  cursor:pointer;
+  margin-bottom:5px;
+  font-size:14px;
+}
+
+.nav-btn:hover,
+.nav-btn.active{
+  background:#292929;
+  color:white;
+}
+
+.logout-btn{
+  position:absolute;
+  bottom:25px;
+  left:15px;
+  width:calc(100% - 30px);
+  padding:12px;
+  border:1px solid #444;
+  background:#191919;
+  color:#fff;
+  border-radius:8px;
   cursor:pointer;
 }
 
-.container{
-  max-width:1200px;
-  margin:auto;
-  padding:25px;
+
+/* ================= MAIN ================= */
+
+.main{
+  margin-left:245px;
+  width:calc(100% - 245px);
 }
 
-.welcome{
+.topbar{
+  height:70px;
+  background:white;
+  border-bottom:1px solid #e5e5e5;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 30px;
+  position:sticky;
+  top:0;
+  z-index:5;
+}
+
+.topbar h2{
+  font-size:20px;
+}
+
+.store-status{
+  font-size:13px;
+  color:#16803c;
+  background:#e9f8ef;
+  padding:8px 12px;
+  border-radius:20px;
+}
+
+.content{
+  padding:30px;
+}
+
+
+/* ================= PAGE ================= */
+
+.page{
+  display:none;
+}
+
+.page.active{
+  display:block;
+}
+
+.page-title{
   margin-bottom:25px;
 }
 
-.welcome h2{
-  font-size:28px;
+.page-title h1{
+  font-size:27px;
   margin-bottom:5px;
 }
 
-.welcome p{
+.page-title p{
   color:#777;
 }
 
-/* CARDS */
-.cards{
+
+/* ================= STATS ================= */
+
+.stats{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  grid-template-columns:repeat(4,1fr);
   gap:18px;
-  margin-bottom:30px;
+  margin-bottom:25px;
 }
 
-.card{
+.stat{
   background:white;
-  padding:25px;
-  border-radius:12px;
-  box-shadow:0 5px 15px rgba(0,0,0,.06);
+  border:1px solid #e8e8e8;
+  border-radius:13px;
+  padding:22px;
 }
 
-.card h3{
+.stat-label{
   color:#777;
-  font-size:14px;
+  font-size:13px;
   margin-bottom:10px;
 }
 
-.card strong{
+.stat-number{
   font-size:30px;
+  font-weight:700;
 }
 
-/* SECTION */
-.section{
+.stat-small{
+  margin-top:7px;
+  font-size:12px;
+  color:#999;
+}
+
+
+/* ================= CARD ================= */
+
+.panel{
   background:white;
-  padding:25px;
-  border-radius:12px;
+  border:1px solid #e8e8e8;
+  border-radius:13px;
+  padding:22px;
   margin-bottom:20px;
-  box-shadow:0 5px 15px rgba(0,0,0,.06);
 }
 
-.section h2{
-  margin-bottom:8px;
+.panel-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:20px;
 }
 
-.section p{
+.panel-head h3{
+  font-size:18px;
+}
+
+.panel-head p{
   color:#777;
+  font-size:13px;
+  margin-top:4px;
+}
+
+
+/* ================= BUTTON ================= */
+
+.btn{
+  border:0;
+  padding:11px 16px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.btn-dark{
+  background:#111;
+  color:#fff;
+}
+
+.btn-light{
+  background:#f3f3f3;
+  color:#111;
+  border:1px solid #ddd;
+}
+
+.btn-danger{
+  background:#ffecec;
+  color:#c00;
+}
+
+
+/* ================= PRODUCT GRID ================= */
+
+.product-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+}
+
+.product-card{
+  border:1px solid #e5e5e5;
+  border-radius:12px;
+  overflow:hidden;
+  background:white;
+}
+
+.product-image{
+  height:210px;
+  background:#f1f1f1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+.product-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.no-image{
+  color:#999;
+  font-size:13px;
+}
+
+.product-info{
+  padding:15px;
+}
+
+.product-info h4{
+  margin-bottom:7px;
+}
+
+.product-price{
+  font-weight:bold;
+  font-size:18px;
+}
+
+.product-meta{
+  color:#777;
+  font-size:12px;
+  margin-top:7px;
+}
+
+.product-actions{
+  display:flex;
+  gap:7px;
+  margin-top:13px;
+}
+
+.product-actions button{
+  flex:1;
+  padding:9px;
+  border-radius:7px;
+  cursor:pointer;
+  border:1px solid #ddd;
+  background:#fff;
+}
+
+
+/* ================= TABLE ================= */
+
+.table-wrap{
+  overflow-x:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:650px;
+}
+
+th,td{
+  padding:14px 10px;
+  border-bottom:1px solid #eee;
+  text-align:left;
+  font-size:13px;
+}
+
+th{
+  color:#777;
+  font-weight:600;
+}
+
+.status{
+  padding:6px 10px;
+  border-radius:20px;
+  font-size:11px;
+  background:#fff4dc;
+  color:#9a6800;
+}
+
+
+/* ================= FORM ================= */
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+
+.form-group{
+  margin-bottom:5px;
+}
+
+.form-group.full{
+  grid-column:1/-1;
+}
+
+.form-group label{
+  display:block;
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:7px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea{
+  width:100%;
+  padding:12px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  font-size:14px;
+}
+
+.form-group textarea{
+  min-height:90px;
+  resize:vertical;
+}
+
+.form-actions{
+  margin-top:20px;
+  display:flex;
+  gap:10px;
+}
+
+
+/* ================= IMAGE UPLOAD ================= */
+
+.upload-box{
+  border:2px dashed #ccc;
+  border-radius:10px;
+  padding:25px;
+  text-align:center;
   margin-bottom:18px;
 }
 
-/* BUTTONS */
-.buttons{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  gap:12px;
+.upload-box input{
+  margin-top:12px;
 }
 
-.admin-btn{
-  padding:15px;
-  border:1px solid #ddd;
-  background:#fafafa;
-  border-radius:8px;
-  cursor:pointer;
-  font-size:15px;
-  text-align:left;
-}
-
-.admin-btn:hover{
-  background:#eee;
-}
-
-/* PHOTO MANAGER */
-#photoManager{
+.upload-preview{
   display:none;
-  margin-top:20px;
-  padding:20px;
-  background:#fafafa;
-  border:1px solid #ddd;
-  border-radius:10px;
-}
-
-#photoManager h3{
-  margin-bottom:15px;
-}
-
-.photo-select{
-  width:100%;
-  padding:12px;
-  border:1px solid #ddd;
-  border-radius:8px;
-  background:white;
-  margin-bottom:15px;
-  font-size:15px;
-}
-
-.file-input{
-  width:100%;
-  padding:12px;
-  background:white;
-  border:1px solid #ddd;
-  border-radius:8px;
-  margin-bottom:15px;
-}
-
-.upload-btn{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:8px;
-  background:#111;
-  color:white;
-  font-size:15px;
-  cursor:pointer;
-}
-
-.upload-btn:hover{
-  background:#333;
-}
-
-#uploadStatus{
-  margin-top:15px;
-  font-size:14px;
-  word-break:break-word;
-}
-
-.preview{
   margin-top:15px;
 }
 
-.preview img{
-  max-width:220px;
-  max-height:220px;
+.upload-preview img{
+  width:180px;
+  height:180px;
+  object-fit:cover;
   border-radius:10px;
-  border:1px solid #ddd;
-  display:none;
 }
 
-.coming{
+
+/* ================= EMPTY ================= */
+
+.empty{
+  text-align:center;
+  padding:50px 20px;
   color:#999;
-  font-size:13px;
-  margin-top:15px;
 }
 
-/* MOBILE */
-@media(max-width:600px){
 
-  header{
-    padding:15px;
+/* ================= MOBILE ================= */
+
+.mobile-menu{
+  display:none;
+}
+
+@media(max-width:1000px){
+
+  .stats{
+    grid-template-columns:repeat(2,1fr);
   }
 
-  header h1{
-    font-size:18px;
-  }
-
-  .container{
-    padding:15px;
-  }
-
-  .welcome h2{
-    font-size:23px;
+  .product-grid{
+    grid-template-columns:repeat(2,1fr);
   }
 
 }
+
+@media(max-width:700px){
+
+  .sidebar{
+    display:none;
+  }
+
+  .main{
+    margin-left:0;
+    width:100%;
+  }
+
+  .mobile-menu{
+    display:block;
+    background:#111;
+    color:#fff;
+    border:0;
+    padding:9px 12px;
+    border-radius:7px;
+  }
+
+  .content{
+    padding:18px;
+  }
+
+  .topbar{
+    padding:0 18px;
+  }
+
+  .stats{
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+
+  .stat{
+    padding:17px;
+  }
+
+  .stat-number{
+    font-size:24px;
+  }
+
+  .product-grid{
+    grid-template-columns:1fr;
+  }
+
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+
+  .form-group.full{
+    grid-column:auto;
+  }
+
+}
+
 </style>
 </head>
+
 
 <body>
 
 
-<!-- LOGIN PAGE -->
+<!-- ================= LOGIN ================= -->
+
 <div id="loginPage">
 
-  <div class="login-box">
+  <div class="login-card">
 
-    <h1>AURA FASHION</h1>
+    <div class="logo-text">
+      AURA FASHION
+    </div>
 
-    <p>Admin Panel</p>
+    <div class="login-sub">
+      Store Administration
+    </div>
 
     <input
       type="password"
       id="password"
-      placeholder="Enter Admin Password"
+      placeholder="Admin Password"
+      onkeydown="if(event.key==='Enter') login()"
     >
 
-    <button onclick="login()">
-      LOGIN
+    <button
+      class="login-btn"
+      onclick="login()"
+    >
+      Login to Dashboard
     </button>
 
     <div id="error">
-      Wrong password
+      Incorrect password
     </div>
 
   </div>
@@ -315,145 +613,367 @@ header h1{
 </div>
 
 
-<!-- ADMIN PAGE -->
+<!-- ================= ADMIN ================= -->
+
 <div id="adminPage">
 
-  <header>
+<div class="app">
 
-    <h1>AURA FASHION — ADMIN</h1>
 
-    <button class="logout" onclick="logout()">
-      Logout
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+  <div class="brand">
+    <h1>AURA FASHION</h1>
+    <span>ADMIN DASHBOARD</span>
+  </div>
+
+  <button class="nav-btn active" onclick="showPage('dashboard',this)">
+    📊 Dashboard
+  </button>
+
+  <button class="nav-btn" onclick="showPage('products',this)">
+    👕 Products
+  </button>
+
+  <button class="nav-btn" onclick="showPage('orders',this)">
+    📦 Orders
+  </button>
+
+  <button class="nav-btn" onclick="showPage('invoices',this)">
+    🧾 Invoices
+  </button>
+
+  <button class="nav-btn" onclick="showPage('website',this)">
+    🌐 Website
+  </button>
+
+  <button class="nav-btn" onclick="showPage('settings',this)">
+    ⚙️ Settings
+  </button>
+
+  <button class="logout-btn" onclick="logout()">
+    Logout
+  </button>
+
+</aside>
+
+
+<!-- MAIN -->
+
+<main class="main">
+
+
+<!-- TOPBAR -->
+
+<div class="topbar">
+
+  <div style="display:flex;align-items:center;gap:12px">
+
+    <button class="mobile-menu" onclick="toggleMobileMenu()">
+      ☰
     </button>
 
-  </header>
+    <h2 id="topTitle">
+      Dashboard
+    </h2>
+
+  </div>
+
+  <div class="store-status">
+    ● Store Online
+  </div>
+
+</div>
 
 
-  <div class="container">
+<div class="content">
 
-    <div class="welcome">
 
-      <h2>Dashboard</h2>
+<!-- ================= DASHBOARD ================= -->
 
-      <p>Manage your AURA FASHION store</p>
+<section id="dashboard" class="page active">
+
+  <div class="page-title">
+
+    <h1>Dashboard</h1>
+
+    <p>
+      Welcome back. Manage your AURA FASHION store.
+    </p>
+
+  </div>
+
+
+  <div class="stats">
+
+    <div class="stat">
+      <div class="stat-label">TOTAL ORDERS</div>
+      <div class="stat-number" id="totalOrders">0</div>
+      <div class="stat-small">All customer orders</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-label">PENDING ORDERS</div>
+      <div class="stat-number" id="pendingOrders">0</div>
+      <div class="stat-small">Need attention</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-label">PRODUCTS</div>
+      <div class="stat-number" id="productCount">4</div>
+      <div class="stat-small">Products in store</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-label">STORE STATUS</div>
+      <div class="stat-number">ON</div>
+      <div class="stat-small">Website is live</div>
+    </div>
+
+  </div>
+
+
+  <div class="panel">
+
+    <div class="panel-head">
+
+      <div>
+        <h3>Quick Actions</h3>
+        <p>Frequently used store management tools.</p>
+      </div>
 
     </div>
 
 
-    <!-- DASHBOARD CARDS -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
 
-    <div class="cards">
+      <button
+        class="btn btn-dark"
+        onclick="showPage('products')"
+      >
+        + Add Product
+      </button>
 
-      <div class="card">
-        <h3>TOTAL ORDERS</h3>
-        <strong id="totalOrders">0</strong>
+      <button
+        class="btn btn-light"
+        onclick="showPage('orders')"
+      >
+        View Orders
+      </button>
+
+      <button
+        class="btn btn-light"
+        onclick="showPage('invoices')"
+      >
+        Create Invoice
+      </button>
+
+      <button
+        class="btn btn-light"
+        onclick="window.open('index.html','_blank')"
+      >
+        View Website
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="panel">
+
+    <div class="panel-head">
+
+      <div>
+        <h3>Store Information</h3>
+        <p>Current AURA FASHION system status.</p>
       </div>
 
-      <div class="card">
-        <h3>PENDING ORDERS</h3>
-        <strong id="pendingOrders">0</strong>
+    </div>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <tr>
+          <th>System</th>
+          <th>Status</th>
+        </tr>
+
+        <tr>
+          <td>Website</td>
+          <td><span class="status">Online</span></td>
+        </tr>
+
+        <tr>
+          <td>Order System</td>
+          <td><span class="status">Connected</span></td>
+        </tr>
+
+        <tr>
+          <td>Product System</td>
+          <td><span class="status">Active</span></td>
+        </tr>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= PRODUCTS ================= -->
+
+<section id="products" class="page">
+
+  <div class="page-title">
+
+    <h1>Products</h1>
+
+    <p>
+      Manage your AURA FASHION T-shirt collection.
+    </p>
+
+  </div>
+
+
+  <div class="panel">
+
+    <div class="panel-head">
+
+      <div>
+        <h3>Product Collection</h3>
+        <p>Add, edit and manage product information.</p>
       </div>
 
-      <div class="card">
-        <h3>PRODUCTS</h3>
-        <strong>4</strong>
-      </div>
+      <button
+        class="btn btn-dark"
+        onclick="showAddProduct()"
+      >
+        + Add Product
+      </button>
 
-      <div class="card">
-        <h3>STORE</h3>
-        <strong>ON</strong>
+    </div>
+
+
+    <div id="productGrid" class="product-grid"></div>
+
+  </div>
+
+
+  <!-- ADD PRODUCT -->
+
+  <div id="productFormPanel" class="panel" style="display:none">
+
+    <div class="panel-head">
+
+      <div>
+        <h3 id="formTitle">Add New Product</h3>
+        <p>Enter your T-shirt product details.</p>
       </div>
 
     </div>
 
 
-    <!-- PRODUCTS -->
+    <div class="form-grid">
 
-    <div class="section">
+      <div class="form-group">
 
-      <h2>👕 Products</h2>
+        <label>Product Name</label>
 
-      <p>
-        Manage your T-shirt products and photos.
-      </p>
-
-      <div class="buttons">
-
-        <button
-          class="admin-btn"
-          onclick="alert('Product Manager will be added next.')"
+        <input
+          id="productName"
+          type="text"
+          placeholder="Example: AURA STREET"
         >
-          ➕ Add Product
-        </button>
-
-
-        <button
-          class="admin-btn"
-          onclick="togglePhotoManager()"
-        >
-          🖼️ Manage Photos
-        </button>
-
-
-        <button
-          class="admin-btn"
-          onclick="alert('Product editor will be added next.')"
-        >
-          ✏️ Edit Products
-        </button>
 
       </div>
 
 
-      <!-- PHOTO MANAGER -->
+      <div class="form-group">
 
-      <div id="photoManager">
+        <label>Price (₹)</label>
 
-        <h3>🖼️ Upload Product Photo</h3>
+        <input
+          id="productPrice"
+          type="number"
+          placeholder="599"
+        >
 
-        <select id="productSelect" class="photo-select">
+      </div>
 
-          <option value="1">
-            AURA CLASSIC BLACK
-          </option>
 
-          <option value="2">
-            AURA MOUNTAIN VIBES
-          </option>
+      <div class="form-group">
 
-          <option value="3">
-            AURA BRUSH SCRIPT
-          </option>
+        <label>Category</label>
 
-          <option value="4">
-            AURA MINIMAL
-          </option>
+        <select id="productCategory">
+
+          <option>CLASSIC LOGO</option>
+          <option>MOUNTAIN GRAPHIC</option>
+          <option>BRUSH SCRIPT</option>
+          <option>MINIMAL</option>
+          <option>GRAPHIC</option>
+          <option>OTHER</option>
 
         </select>
 
+      </div>
+
+
+      <div class="form-group">
+
+        <label>Stock</label>
 
         <input
-          type="file"
-          id="imageFile"
-          class="file-input"
-          accept="image/*"
-          onchange="previewImage()"
+          id="productStock"
+          type="number"
+          value="10"
         >
 
+      </div>
 
-        <button
-          class="upload-btn"
-          onclick="uploadImage()"
+
+      <div class="form-group full">
+
+        <label>Available Sizes</label>
+
+        <input
+          id="productSizes"
+          type="text"
+          value="S,M,L,XL,XXL"
         >
-          ⬆️ Upload Photo
-        </button>
+
+      </div>
 
 
-        <div id="uploadStatus"></div>
+      <div class="form-group full">
 
+        <label>Product Photo</label>
 
-        <div class="preview">
-          <img id="imagePreview">
+        <div class="upload-box">
+
+          <div>
+            🖼️ Select product image
+          </div>
+
+          <input
+            type="file"
+            id="productImage"
+            accept="image/*"
+            onchange="previewProductImage()"
+          >
+
+          <div id="imagePreviewBox" class="upload-preview">
+
+            <img id="productPreview">
+
+          </div>
+
         </div>
 
       </div>
@@ -461,117 +981,265 @@ header h1{
     </div>
 
 
-    <!-- ORDERS -->
+    <div class="form-actions">
 
-    <div class="section">
+      <button
+        class="btn btn-dark"
+        onclick="saveProduct()"
+      >
+        Save Product
+      </button>
 
-      <h2>📦 Orders</h2>
+      <button
+        class="btn btn-light"
+        onclick="cancelProductForm()"
+      >
+        Cancel
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= ORDERS ================= -->
+
+<section id="orders" class="page">
+
+  <div class="page-title">
+
+    <h1>Orders</h1>
+
+    <p>
+      View and manage customer orders.
+    </p>
+
+  </div>
+
+
+  <div class="panel">
+
+    <div class="panel-head">
+
+      <div>
+        <h3>Customer Orders</h3>
+        <p>Orders from your AURA FASHION website.</p>
+      </div>
+
+      <button
+        class="btn btn-light"
+        onclick="alert('Live Google Sheet order connection will be connected next.')"
+      >
+        🔄 Refresh
+      </button>
+
+    </div>
+
+
+    <div class="empty">
+
+      📦
+
+      <h3 style="margin:12px 0 5px">
+        Order Manager
+      </h3>
 
       <p>
-        View and manage customer orders.
+        Your existing orders are safely stored in Google Sheets.
       </p>
 
-      <div class="buttons">
+    </div>
 
-        <button
-          class="admin-btn"
-          onclick="alert('Order Manager will be added next.')"
-        >
-          📋 View Orders
-        </button>
+  </div>
 
-        <button
-          class="admin-btn"
-          onclick="alert('Order status manager will be added next.')"
-        >
-          🔄 Order Status
-        </button>
+</section>
 
-        <button
-          class="admin-btn"
-          onclick="alert('Invoice system will be added next.')"
-        >
-          🧾 Generate Bill
-        </button>
 
+<!-- ================= INVOICES ================= -->
+
+<section id="invoices" class="page">
+
+  <div class="page-title">
+
+    <h1>Invoices</h1>
+
+    <p>
+      Create and manage customer bills.
+    </p>
+
+  </div>
+
+
+  <div class="panel">
+
+    <div class="empty">
+
+      🧾
+
+      <h3 style="margin:12px 0 5px">
+        Invoice System
+      </h3>
+
+      <p>
+        Professional printable invoice generation will be connected next.
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= WEBSITE ================= -->
+
+<section id="website" class="page">
+
+  <div class="page-title">
+
+    <h1>Website</h1>
+
+    <p>
+      Manage your online store content.
+    </p>
+
+  </div>
+
+
+  <div class="panel">
+
+    <div class="panel-head">
+
+      <div>
+        <h3>Website Management</h3>
+        <p>Quick access to your storefront.</p>
       </div>
 
     </div>
 
 
-    <!-- WEBSITE -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
 
-    <div class="section">
+      <button
+        class="btn btn-light"
+        onclick="alert('Banner manager will be connected next.')"
+      >
+        🖼️ Change Banner
+      </button>
 
-      <h2>🌐 Website</h2>
+      <button
+        class="btn btn-light"
+        onclick="alert('Hero image manager will be connected next.')"
+      >
+        🏠 Change Hero
+      </button>
 
-      <p>
-        Manage your website content.
-      </p>
-
-      <div class="buttons">
-
-        <button
-          class="admin-btn"
-          onclick="alert('Banner manager will be added next.')"
-        >
-          🖼️ Change Banner
-        </button>
-
-        <button
-          class="admin-btn"
-          onclick="alert('Hero image manager will be added next.')"
-        >
-          🏠 Change Hero Image
-        </button>
-
-        <button
-          class="admin-btn"
-          onclick="window.open('index.html','_blank')"
-        >
-          👀 View Website
-        </button>
-
-      </div>
+      <button
+        class="btn btn-dark"
+        onclick="window.open('index.html','_blank')"
+      >
+        👀 Open Website
+      </button>
 
     </div>
 
+  </div>
 
-    <!-- SYSTEM -->
+</section>
 
-    <div class="section">
 
-      <h2>⚙️ System</h2>
+<!-- ================= SETTINGS ================= -->
 
-      <p>
-        AURA FASHION Admin System
-      </p>
+<section id="settings" class="page">
 
-      <div class="coming">
-        More management features will be added here.
+  <div class="page-title">
+
+    <h1>Settings</h1>
+
+    <p>
+      AURA FASHION store settings.
+    </p>
+
+  </div>
+
+
+  <div class="panel">
+
+    <h3 style="margin-bottom:15px">
+      Store Settings
+    </h3>
+
+    <div class="form-grid">
+
+      <div class="form-group">
+
+        <label>Store Name</label>
+
+        <input
+          type="text"
+          value="AURA FASHION"
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>Currency</label>
+
+        <select>
+          <option>INR (₹)</option>
+        </select>
+
+      </div>
+
+
+      <div class="form-group full">
+
+        <label>Store Tagline</label>
+
+        <input
+          type="text"
+          value="Your Style. Your Aura."
+        >
+
       </div>
 
     </div>
 
   </div>
 
+</section>
+
+
+</div>
+
+</main>
+
+</div>
+
 </div>
 
 
 <script>
 
-/* GOOGLE APPS SCRIPT */
-
-const GOOGLE_SCRIPT_URL =
-"https://script.google.com/macros/s/AKfycbyGPeCcqYG5nkTtTSmgD4rshbbrFxn62NZxAjn3DNo-pDVsaJxJoKcPQQ_sQd2iY07bA/exec";
-
-
-/* ADMIN PASSWORD */
+/* ================= CONFIG ================= */
 
 const ADMIN_PASSWORD = "aura123";
 
 
-/* LOGIN */
+/*
+ IMPORTANT:
+ This is your current Google Apps Script Web App.
+*/
+
+const GOOGLE_SCRIPT_URL =
+"https://script.google.com/macros/s/AKfycbyGPeCcqYG5nkTtTSmgD4rshbbrFxn62NZxAjn3DNo-pDVsaJJoKcPQQ_sQd2iY07bA/exec";
+
+
+/* ================= LOGIN ================= */
 
 function login(){
 
@@ -586,6 +1254,8 @@ function login(){
     document.getElementById("adminPage").style.display =
       "block";
 
+    loadProducts();
+
   }else{
 
     document.getElementById("error").style.display =
@@ -596,7 +1266,7 @@ function login(){
 }
 
 
-/* LOGOUT */
+/* ================= LOGOUT ================= */
 
 function logout(){
 
@@ -614,75 +1284,379 @@ function logout(){
 }
 
 
-/* PHOTO MANAGER */
+/* ================= PAGE NAVIGATION ================= */
 
-function togglePhotoManager(){
+function showPage(pageId,button){
 
-  const manager =
-    document.getElementById("photoManager");
+  document.querySelectorAll(".page").forEach(function(page){
 
-  if(manager.style.display === "block"){
+    page.classList.remove("active");
 
-    manager.style.display = "none";
+  });
+
+  document.getElementById(pageId).classList.add("active");
+
+
+  document.querySelectorAll(".nav-btn").forEach(function(btn){
+
+    btn.classList.remove("active");
+
+  });
+
+
+  if(button){
+
+    button.classList.add("active");
+
+  }
+
+
+  const titles = {
+
+    dashboard:"Dashboard",
+    products:"Products",
+    orders:"Orders",
+    invoices:"Invoices",
+    website:"Website",
+    settings:"Settings"
+
+  };
+
+
+  document.getElementById("topTitle").innerText =
+    titles[pageId] || "Dashboard";
+
+}
+
+
+/* ================= MOBILE ================= */
+
+function toggleMobileMenu(){
+
+  const sidebar =
+    document.querySelector(".sidebar");
+
+  if(sidebar.style.display === "block"){
+
+    sidebar.style.display = "none";
 
   }else{
 
-    manager.style.display = "block";
+    sidebar.style.display = "block";
 
   }
 
 }
 
 
-/* IMAGE PREVIEW */
+/* ================= PRODUCTS ================= */
 
-function previewImage(){
+let products = [
 
-  const file =
-    document.getElementById("imageFile").files[0];
+  {
+    id:1,
+    name:"AURA CLASSIC BLACK",
+    price:499,
+    category:"CLASSIC LOGO",
+    sizes:"S,M,L,XL,XXL",
+    stock:10,
+    image:""
+  },
 
-  const preview =
-    document.getElementById("imagePreview");
+  {
+    id:2,
+    name:"AURA MOUNTAIN VIBES",
+    price:599,
+    category:"MOUNTAIN GRAPHIC",
+    sizes:"S,M,L,XL,XXL",
+    stock:10,
+    image:""
+  },
 
-  if(!file){
+  {
+    id:3,
+    name:"AURA BRUSH SCRIPT",
+    price:549,
+    category:"BRUSH SCRIPT",
+    sizes:"S,M,L,XL,XXL",
+    stock:10,
+    image:""
+  },
 
-    preview.style.display = "none";
+  {
+    id:4,
+    name:"AURA MINIMAL",
+    price:699,
+    category:"MINIMAL",
+    sizes:"S,M,L,XL,XXL",
+    stock:10,
+    image:""
+  }
+
+];
+
+
+let editingProductId = null;
+
+
+/* LOAD PRODUCTS */
+
+function loadProducts(){
+
+  const saved =
+    localStorage.getItem("auraProducts");
+
+  if(saved){
+
+    try{
+
+      products = JSON.parse(saved);
+
+    }catch(error){
+
+      console.log(error);
+
+    }
+
+  }
+
+  renderProducts();
+
+}
+
+
+/* SAVE LOCAL PRODUCTS */
+
+function saveProducts(){
+
+  localStorage.setItem(
+    "auraProducts",
+    JSON.stringify(products)
+  );
+
+}
+
+
+/* RENDER */
+
+function renderProducts(){
+
+  const grid =
+    document.getElementById("productGrid");
+
+  grid.innerHTML = "";
+
+
+  products.forEach(function(product){
+
+    const card =
+      document.createElement("div");
+
+    card.className = "product-card";
+
+
+    let imageHTML =
+      `<div class="no-image">No Photo</div>`;
+
+
+    if(product.image){
+
+      imageHTML =
+        `<img src="${product.image}" alt="${product.name}">`;
+
+    }
+
+
+    card.innerHTML = `
+
+      <div class="product-image">
+        ${imageHTML}
+      </div>
+
+      <div class="product-info">
+
+        <h4>${escapeHTML(product.name)}</h4>
+
+        <div class="product-price">
+          ₹${product.price}
+        </div>
+
+        <div class="product-meta">
+          ${escapeHTML(product.category)}
+        </div>
+
+        <div class="product-meta">
+          Sizes: ${escapeHTML(product.sizes)}
+        </div>
+
+        <div class="product-meta">
+          Stock: ${product.stock}
+        </div>
+
+        <div class="product-actions">
+
+          <button onclick="editProduct(${product.id})">
+            ✏️ Edit
+          </button>
+
+          <button onclick="deleteProduct(${product.id})">
+            🗑️ Delete
+          </button>
+
+        </div>
+
+      </div>
+
+    `;
+
+
+    grid.appendChild(card);
+
+  });
+
+
+  document.getElementById("productCount").innerText =
+    products.length;
+
+}
+
+
+/* ADD PRODUCT */
+
+function showAddProduct(){
+
+  editingProductId = null;
+
+  document.getElementById("formTitle").innerText =
+    "Add New Product";
+
+  document.getElementById("productName").value = "";
+
+  document.getElementById("productPrice").value = "";
+
+  document.getElementById("productCategory").value =
+    "CLASSIC LOGO";
+
+  document.getElementById("productStock").value = "10";
+
+  document.getElementById("productSizes").value =
+    "S,M,L,XL,XXL";
+
+  document.getElementById("productImage").value = "";
+
+  document.getElementById("imagePreviewBox").style.display =
+    "none";
+
+  document.getElementById("productFormPanel").style.display =
+    "block";
+
+  document.getElementById("productFormPanel")
+    .scrollIntoView({
+      behavior:"smooth"
+    });
+
+}
+
+
+/* EDIT PRODUCT */
+
+function editProduct(id){
+
+  const product =
+    products.find(function(item){
+
+      return item.id === id;
+
+    });
+
+
+  if(!product) return;
+
+
+  editingProductId = id;
+
+
+  document.getElementById("formTitle").innerText =
+    "Edit Product";
+
+
+  document.getElementById("productName").value =
+    product.name;
+
+  document.getElementById("productPrice").value =
+    product.price;
+
+  document.getElementById("productCategory").value =
+    product.category;
+
+  document.getElementById("productStock").value =
+    product.stock;
+
+  document.getElementById("productSizes").value =
+    product.sizes;
+
+
+  document.getElementById("productFormPanel").style.display =
+    "block";
+
+
+  document.getElementById("productFormPanel")
+    .scrollIntoView({
+      behavior:"smooth"
+    });
+
+}
+
+
+/* DELETE */
+
+function deleteProduct(id){
+
+  const product =
+    products.find(function(item){
+
+      return item.id === id;
+
+    });
+
+
+  if(!product) return;
+
+
+  if(!confirm(
+    "Delete " + product.name + "?"
+  )){
+
     return;
 
   }
 
-  const reader = new FileReader();
 
-  reader.onload = function(e){
+  products =
+    products.filter(function(item){
 
-    preview.src = e.target.result;
-    preview.style.display = "block";
+      return item.id !== id;
 
-  };
+    });
 
-  reader.readAsDataURL(file);
+
+  saveProducts();
+
+  renderProducts();
 
 }
 
 
-/* UPLOAD IMAGE */
+/* PREVIEW */
 
-async function uploadImage(){
+function previewProductImage(){
 
   const file =
-    document.getElementById("imageFile").files[0];
-
-  const product =
-    document.getElementById("productSelect").value;
-
-  const status =
-    document.getElementById("uploadStatus");
+    document.getElementById("productImage").files[0];
 
 
   if(!file){
 
-    status.style.color = "red";
-    status.innerText = "Please select an image first.";
     return;
 
   }
@@ -690,71 +1664,219 @@ async function uploadImage(){
 
   if(file.size > 5 * 1024 * 1024){
 
-    status.style.color = "red";
-    status.innerText = "Image must be smaller than 5MB.";
+    alert("Image must be smaller than 5MB.");
+
+    document.getElementById("productImage").value = "";
+
     return;
 
   }
 
 
-  status.style.color = "#555";
-  status.innerText = "Uploading photo...";
+  const reader =
+    new FileReader();
 
 
-  const reader = new FileReader();
+  reader.onload = function(e){
 
+    document.getElementById("productPreview").src =
+      e.target.result;
 
-  reader.onload = async function(){
-
-    try{
-
-      const response =
-        await fetch(GOOGLE_SCRIPT_URL,{
-          method:"POST",
-          mode:"no-cors",
-          headers:{
-            "Content-Type":"text/plain;charset=utf-8"
-          },
-          body:JSON.stringify({
-
-            action:"uploadImage",
-
-            productId:product,
-
-            fileName:
-              Date.now() + "_" + file.name,
-
-            mimeType:file.type,
-
-            image:reader.result
-
-          })
-
-        });
-
-
-      status.style.color = "green";
-
-      status.innerText =
-        "Photo uploaded successfully to Google Drive.";
-
-      document.getElementById("imageFile").value = "";
-
-    }catch(error){
-
-      status.style.color = "red";
-
-      status.innerText =
-        "Upload failed. Please try again.";
-
-      console.error(error);
-
-    }
+    document.getElementById("imagePreviewBox").style.display =
+      "block";
 
   };
 
 
   reader.readAsDataURL(file);
+
+}
+
+
+/* SAVE PRODUCT */
+
+function saveProduct(){
+
+  const name =
+    document.getElementById("productName").value.trim();
+
+  const price =
+    Number(document.getElementById("productPrice").value);
+
+  const category =
+    document.getElementById("productCategory").value;
+
+  const stock =
+    Number(document.getElementById("productStock").value);
+
+  const sizes =
+    document.getElementById("productSizes").value.trim();
+
+  const file =
+    document.getElementById("productImage").files[0];
+
+
+  if(!name){
+
+    alert("Please enter product name.");
+
+    return;
+
+  }
+
+
+  if(!price || price < 1){
+
+    alert("Please enter a valid price.");
+
+    return;
+
+  }
+
+
+  if(editingProductId){
+
+    const product =
+      products.find(function(item){
+
+        return item.id === editingProductId;
+
+      });
+
+
+    if(product){
+
+      product.name = name;
+      product.price = price;
+      product.category = category;
+      product.stock = stock;
+      product.sizes = sizes;
+
+
+      if(file){
+
+        const reader =
+          new FileReader();
+
+
+        reader.onload = function(e){
+
+          product.image =
+            e.target.result;
+
+          saveProducts();
+
+          renderProducts();
+
+          cancelProductForm();
+
+          alert("Product updated successfully.");
+
+        };
+
+
+        reader.readAsDataURL(file);
+
+        return;
+
+      }
+
+    }
+
+  }else{
+
+    const newProduct = {
+
+      id:Date.now(),
+
+      name:name,
+
+      price:price,
+
+      category:category,
+
+      stock:stock,
+
+      sizes:sizes,
+
+      image:""
+
+    };
+
+
+    if(file){
+
+      const reader =
+        new FileReader();
+
+
+      reader.onload = function(e){
+
+        newProduct.image =
+          e.target.result;
+
+        products.push(newProduct);
+
+        saveProducts();
+
+        renderProducts();
+
+        cancelProductForm();
+
+        alert("Product added successfully.");
+
+      };
+
+
+      reader.readAsDataURL(file);
+
+      return;
+
+    }
+
+
+    products.push(newProduct);
+
+  }
+
+
+  saveProducts();
+
+  renderProducts();
+
+  cancelProductForm();
+
+  alert(
+    editingProductId
+      ? "Product updated successfully."
+      : "Product added successfully."
+  );
+
+}
+
+
+/* CANCEL */
+
+function cancelProductForm(){
+
+  document.getElementById("productFormPanel").style.display =
+    "none";
+
+  editingProductId = null;
+
+}
+
+
+/* HTML SECURITY */
+
+function escapeHTML(text){
+
+  return String(text)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 
 }
 
